@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import logoImg from "@/assets/images/logo_sem_fundo.png";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -26,10 +27,9 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20">
         <a href="#home" className="flex items-center gap-3">
-          <img src="/images/logo_sem_fundo.png" alt="DaNatureza" className="h-10 md:h-14 w-auto" />
+          <img src={logoImg} alt="DaNatureza" className="h-10 md:h-14 w-auto" />
         </a>
 
-        {/* Desktop */}
         <ul className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <li key={link.href}>
@@ -43,7 +43,6 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Mobile toggle */}
         <button
           className="md:hidden text-foreground"
           onClick={() => setOpen(!open)}
@@ -53,7 +52,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border">
           <ul className="flex flex-col items-center gap-4 py-6">

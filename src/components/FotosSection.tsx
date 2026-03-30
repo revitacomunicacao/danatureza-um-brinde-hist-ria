@@ -1,12 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import c01 from "@/assets/images/DaNatureza-Carrossel-01.png";
+import c02 from "@/assets/images/DaNatureza-Carrossel-02.png";
+import c03 from "@/assets/images/DaNatureza-Carrossel-03.png";
+import c04 from "@/assets/images/DaNatureza-Carrossel-04.png";
+import c05 from "@/assets/images/DaNatureza-Carrossel-05.png";
+
 const images = [
-  { src: "/images/DaNatureza-Carrossel-01.png", alt: "DaNatureza 01" },
-  { src: "/images/DaNatureza-Carrossel-02.png", alt: "DaNatureza 02" },
-  { src: "/images/DaNatureza-Carrossel-03.png", alt: "DaNatureza 03" },
-  { src: "/images/DaNatureza-Carrossel-04.png", alt: "DaNatureza 04" },
-  { src: "/images/DaNatureza-Carrossel-05.png", alt: "DaNatureza 05" },
+  { src: c01, alt: "DaNatureza 01" },
+  { src: c02, alt: "DaNatureza 02" },
+  { src: c03, alt: "DaNatureza 03" },
+  { src: c04, alt: "DaNatureza 04" },
+  { src: c05, alt: "DaNatureza 05" },
 ];
 
 const FotosSection = () => {
@@ -42,7 +48,6 @@ const FotosSection = () => {
             ))}
           </div>
 
-          {/* Arrows */}
           <button
             onClick={prev}
             className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/60 hover:bg-background/80 text-foreground rounded-full p-2 transition-colors"
@@ -58,7 +63,6 @@ const FotosSection = () => {
             <ChevronRight size={24} />
           </button>
 
-          {/* Dots */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
             {images.map((_, i) => (
               <button
