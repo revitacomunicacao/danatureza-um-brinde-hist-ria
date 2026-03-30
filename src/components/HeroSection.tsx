@@ -1,3 +1,6 @@
+import mesaImg from "@/assets/images/DaNatureza-Mesa.png";
+import logoRedonda from "@/assets/images/DaNatureza-Logo-Redonda.png";
+
 const HeroSection = () => {
   return (
     <section
@@ -7,7 +10,7 @@ const HeroSection = () => {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/DaNatureza-Mesa.png')" }}
+        style={{ backgroundImage: `url('${mesaImg}')` }}
       />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-background/75" />
@@ -15,7 +18,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-4 animate-fade-in-up">
         <img
-          src="/images/DaNatureza-Logo-Redonda.png"
+          src={logoRedonda}
           alt="DaNatureza Logo"
           className="w-40 h-40 md:w-56 md:h-56 mx-auto mb-8 rounded-full shadow-2xl"
         />
