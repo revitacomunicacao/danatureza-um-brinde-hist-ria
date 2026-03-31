@@ -21,15 +21,27 @@ const Footer = () => {
             <h3 className="font-serif text-lg text-primary mb-1">Contato</h3>
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <MapPin size={16} className="text-primary flex-shrink-0" />
-              <span>Delfinópolis/MG — Serra da Canastra</span>
+              <span>Uberaba/MG</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Mail size={16} className="text-primary flex-shrink-0" />
-              <span>contato@danatureza.com.br</span>
+              <a
+                href="mailto:contato@danatureza.com.br"
+                className="hover:text-primary transition-colors"
+              >
+                contato@danatureza.com.br
+              </a>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Phone size={16} className="text-primary flex-shrink-0" />
-              <span>(34) 99999-0000</span>
+              <a
+                href="https://wa.me/5534992693333"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-primary transition-colors"
+              >
+                (34) 9.9269-3333
+              </a>
             </div>
           </div>
 
@@ -49,7 +61,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border text-center">
           <p className="text-muted-foreground text-xs tracking-wider uppercase">
-            Beba com moderação · DaNatureza © {new Date().getFullYear()}
+            Produto destinado a adultos 18+ - Beba com moderação · Um brinde DaNatureza © 2026
           </p>
         </div>
       </div>

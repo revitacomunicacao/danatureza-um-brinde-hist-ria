@@ -1,77 +1,173 @@
-import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import c01 from "@/assets/images/DaNatureza-Carrossel-01.png";
-import c02 from "@/assets/images/DaNatureza-Carrossel-02.png";
-import c03 from "@/assets/images/DaNatureza-Carrossel-03.png";
-import c04 from "@/assets/images/DaNatureza-Carrossel-04.png";
-import c05 from "@/assets/images/DaNatureza-Carrossel-05.png";
+const imageModules = import.meta.glob<{ default: string }>(
+  "@/assets/images/carrossel*.jpg",
+  { eager: true },
+);
 
-const images = [
-  { src: c01, alt: "DaNatureza 01" },
-  { src: c02, alt: "DaNatureza 02" },
-  { src: c03, alt: "DaNatureza 03" },
-  { src: c04, alt: "DaNatureza 04" },
-  { src: c05, alt: "DaNatureza 05" },
-];
+const images = Object.keys(imageModules)
+  .sort((a, b) => a.localeCompare(b))
+  .map((key, i) => ({
+    src: imageModules[key].default,
+    alt: `DaNatureza — Galeria ${i + 1}`,
+  }));
+
+type SlideImageProps = {
+  src: string;
+  alt: string;
+  isFeatured: boolean;
+};
+
+const SlideImage = ({ src, alt, isFeatured }: SlideImageProps) => {
+  const [broken, setBroken] = useState(false);
+
+  if (broken) {
+    return (
+      <div
+        className={cn(
+          "flex w-full flex-col items-center justify-center gap-3 rounded-lg bg-muted/40 text-muted-foreground ring-1 ring-border",
+          isFeatured ? "min-h-[min(55vh,480px)]" : "min-h-[min(40vh,320px)]",
+        )}
+      >
+        <ImageOff className="h-10 w-10 opacity-50" aria-hidden />
+        <span className="max-w-[14rem] text-center text-xs">Não foi possível carregar esta imagem.</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={1600}
+      height={1200}
+      loading="eager"
+      decoding="async"
+      draggable={false}
+      onError={() => setBroken(true)}
+      className={cn(
+        "h-auto w-full select-none object-contain transition-[max-height] duration-500 ease-out",
+        isFeatured ? "max-h-[min(72vh,920px)]" : "max-h-[min(48vh,520px)]",
+      )}
+    />
+  );
+};
 
 const FotosSection = () => {
-  const [current, setCurrent] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "center",
+      containScroll: "trimSnaps",
+      dragFree: false,
+      slidesToScroll: 1,
+    },
+    [],
+  );
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % images.length), []);
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + images.length) % images.length), []);
+  const [selected, setSelected] = useState(0);
+
+  const reselect = useCallback((api: NonNullable<typeof emblaApi>) => {
+    setSelected(api.selectedScrollSnap());
+  }, []);
 
   useEffect(() => {
-    const timer = setInterval(next, 5000);
-    return () => clearInterval(timer);
-  }, [next]);
+    if (!emblaApi) return;
+    reselect(emblaApi);
+    emblaApi.on("select", reselect);
+    emblaApi.on("reInit", reselect);
+    return () => {
+      emblaApi.off("select", reselect);
+      emblaApi.off("reInit", reselect);
+    };
+  }, [emblaApi, reselect]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const id = window.setInterval(() => emblaApi.scrollNext(), 6000);
+    return () => window.clearInterval(id);
+  }, [emblaApi]);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
     <section id="fotos" className="py-20 md:py-28 bg-secondary">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <h2 className="font-serif text-3xl md:text-5xl text-cream text-center mb-12 tracking-wide">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <h2 className="mb-3 text-center font-serif text-3xl tracking-wide text-cream md:mb-4 md:text-5xl">
           <span className="text-primary">Galeria</span> de Fotos
         </h2>
+        <p className="mb-10 text-center text-sm font-light text-muted-foreground md:mb-14 md:text-base">
+          Toque nas laterais ou use as setas — a foto central está em destaque.
+        </p>
 
-        <div className="relative overflow-hidden rounded-xl shadow-2xl">
-          <div
-            className="flex transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateX(-${current * 100}%)` }}
-          >
-            {images.map((img) => (
-              <img
-                key={img.src}
-                src={img.src}
-                alt={img.alt}
-                className="w-full flex-shrink-0 object-cover aspect-video"
-              />
-            ))}
+        <div className="relative rounded-xl bg-brown-deeper/80 py-6 shadow-2xl ring-1 ring-border md:py-10">
+          <div className="overflow-hidden pl-2 pr-2 md:pl-4 md:pr-4" ref={emblaRef}>
+            <div className="flex items-center gap-3 md:gap-6 [&>*]:min-w-0">
+              {images.map((img, i) => {
+                const featured = i === selected;
+                return (
+                  <div
+                    key={`${img.src}-${i}`}
+                    className={cn(
+                      "flex-[0_0_78%] transition-all duration-500 ease-out sm:flex-[0_0_58%] lg:flex-[0_0_48%]",
+                      featured
+                        ? "z-20 scale-100 opacity-100"
+                        : "z-10 scale-[0.88] cursor-pointer opacity-50 hover:opacity-[0.72]",
+                    )}
+                    onClick={() => {
+                      if (!featured) emblaApi?.scrollTo(i);
+                    }}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-current={featured ? "true" : undefined}
+                    aria-label={img.alt}
+                  >
+                    <div
+                      className={cn(
+                        "rounded-lg p-2 transition-shadow duration-500 md:p-3",
+                        featured ? "shadow-[0_20px_50px_-12px_rgba(0,0,0,0.65)] ring-2 ring-primary/55" : "ring-1 ring-border/60",
+                      )}
+                    >
+                      <SlideImage src={img.src} alt={img.alt} isFeatured={featured} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/60 hover:bg-background/80 text-foreground rounded-full p-2 transition-colors"
+            type="button"
+            onClick={scrollPrev}
+            className="absolute left-1 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/75 p-2.5 text-foreground shadow-md backdrop-blur-sm transition-colors hover:bg-background/90 md:left-2"
             aria-label="Foto anterior"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={22} />
           </button>
           <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/60 hover:bg-background/80 text-foreground rounded-full p-2 transition-colors"
+            type="button"
+            onClick={scrollNext}
+            className="absolute right-1 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/75 p-2.5 text-foreground shadow-md backdrop-blur-sm transition-colors hover:bg-background/90 md:right-2"
             aria-label="Próxima foto"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={22} />
           </button>
 
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 gap-2 md:bottom-5">
             {images.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i === current ? "bg-primary w-6" : "bg-foreground/40"
-                }`}
-                aria-label={`Foto ${i + 1}`}
+                type="button"
+                onClick={() => emblaApi?.scrollTo(i)}
+                className={cn(
+                  "h-2.5 rounded-full transition-all",
+                  i === selected ? "w-7 bg-primary" : "w-2.5 bg-foreground/35 hover:bg-foreground/50",
+                )}
+                aria-label={`Ir para foto ${i + 1}`}
               />
             ))}
           </div>

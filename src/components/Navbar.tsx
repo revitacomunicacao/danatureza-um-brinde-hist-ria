@@ -25,9 +25,9 @@ const Navbar = () => {
         scrolled ? "bg-background/95 backdrop-blur-md shadow-lg" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20 md:h-28">
         <a href="#home" className="flex items-center gap-3">
-          <img src={logoImg} alt="DaNatureza" className="h-10 md:h-14 w-auto" />
+          <img src={logoImg} alt="DaNatureza" className="h-20 md:h-28 w-auto" />
         </a>
 
         <ul className="hidden md:flex items-center gap-8">
